@@ -1,0 +1,107 @@
+{% extends "processos/base.html" %}
+
+{% block title %}Painel de Processos — SGPD{% endblock %}
+
+{% block content %}
+<h1>Painel de Acompanhamento (RF03)</h1>
+
+<section class="grid-4" aria-label="Indicadores de processos">
+  <div class="metric-card">
+    <div class="metric-label">Total</div>
+    <div class="metric-value">{{ metricas.total }}</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Abertas</div>
+    <div class="metric-value">{{ metricas.abertas }}</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Em andamento</div>
+    <div class="metric-value">{{ metricas.em_andamento }}</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Concluídas</div>
+    <div class="metric-value">{{ metricas.concluidas }}</div>
+  </div>
+</section>
+
+<section class="card" aria-labelledby="titulo-filtros">
+  <h2 id="titulo-filtros">Filtrar Solicitações</h2>
+  <form method="get" class="grid-4" style="align-items: end;">
+    <div>
+      <label for="filtro-busca">Busca (protocolo, título ou nome)</label>
+      <input id="filtro-busca" type="text" name="q" value="{{ filtros.q }}" class="form-control" placeholder="Ex.: SGPD-2026">
+    </div>
+    <div>
+      <label for="filtro-status">Status</label>
+      <select id="filtro-status" name="status" class="form-control">
+        <option value="">Todos</option>
+        {% for valor, rotulo in status_choices %}
+          <option value="{{ valor }}" {% if filtros.status == valor %}selected{% endif %}>{{ rotulo }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="filtro-categoria">Categoria</label>
+      <select id="filtro-categoria" name="categoria" class="form-control">
+        <option value="">Todas</option>
+        {% for valor, rotulo in categoria_choices %}
+          <option value="{{ valor }}" {% if filtros.categoria == valor %}selected{% endif %}>{{ rotulo }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="filtro-prioridade">Prioridade</label>
+      <select id="filtro-prioridade" name="prioridade" class="form-control">
+        <option value="">Todas</option>
+        {% for valor, rotulo in prioridade_choices %}
+          <option value="{{ valor }}" {% if filtros.prioridade == valor %}selected{% endif %}>{{ rotulo }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <button type="submit" class="btn">Aplicar Filtros</button>
+      <a href="{% url 'processos:painel' %}" class="btn btn-secondary">Limpar</a>
+    </div>
+  </form>
+</section>
+
+<section class="card" aria-labelledby="titulo-listagem">
+  <h2 id="titulo-listagem">Solicitações Registradas</h2>
+  {% if solicitacoes %}
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Protocolo</th>
+            <th scope="col">Título</th>
+            <th scope="col">Solicitante</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Prioridade</th>
+            <th scope="col">Status</th>
+            <th scope="col">Criado em</th>
+            <th scope="col">Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in solicitacoes %}
+            <tr>
+              <td><strong>{{ item.protocolo }}</strong></td>
+              <td>{{ item.titulo }}</td>
+              <td>{{ item.nome_solicitante }}</td>
+              <td>{{ item.get_categoria_display }}</td>
+              <td>{{ item.get_prioridade_display }}</td>
+              <td><span class="badge">{{ item.get_status_display }}</span></td>
+              <td>{{ item.criado_em|date:"d/m/Y H:i" }}</td>
+              <td>
+                <a href="{% url 'processos:protocolo_detalhe' item.protocolo %}">Abrir</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>Nenhuma solicitação encontrada com os filtros informados.</p>
+  {% endif %}
+</section>
+{% endblock %}

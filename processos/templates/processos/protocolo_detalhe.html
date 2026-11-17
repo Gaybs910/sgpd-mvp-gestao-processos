@@ -1,0 +1,94 @@
+{% extends "processos/base.html" %}
+
+{% block title %}Protocolo {{ solicitacao.protocolo }} — SGPD{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'processos:painel' %}">&larr; Voltar ao painel</a></p>
+
+<section class="card" aria-labelledby="titulo-protocolo">
+  <h1 id="titulo-protocolo">Protocolo {{ solicitacao.protocolo }}</h1>
+  <p><strong>Título:</strong> {{ solicitacao.titulo }}</p>
+  <p>
+    <strong>Status atual:</strong> <span class="badge">{{ solicitacao.get_status_display }}</span> |
+    <strong>Categoria:</strong> {{ solicitacao.get_categoria_display }} |
+    <strong>Prioridade:</strong> {{ solicitacao.get_prioridade_display }}
+  </p>
+  <p><strong>Solicitante:</strong> {{ solicitacao.nome_solicitante }} ({{ solicitacao.email_solicitante }})</p>
+  <p><strong>Criado em:</strong> {{ solicitacao.criado_em|date:"d/m/Y H:i" }}</p>
+  <p><strong>Descrição:</strong><br>{{ solicitacao.descricao|linebreaksbr }}</p>
+</section>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="titulo-historico">
+    <h2 id="titulo-historico">Histórico de Tramitação (RF02)</h2>
+    {% if historico %}
+      <ol>
+        {% for evento in historico %}
+          <li style="margin-bottom: 0.85rem;">
+            <strong>{{ evento.get_status_novo_display }}</strong>
+            <small>({{ evento.registrado_em|date:"d/m/Y H:i" }})</small><br>
+            <span>{{ evento.observacao }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p>Sem movimentações registradas.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="titulo-acoes">
+    <h2 id="titulo-acoes">Movimentação e Avaliação (RF04)</h2>
+
+    {% if pode_tramitar %}
+      <form method="post" novalidate style="margin-bottom: 1.5rem;">
+        {% csrf_token %}
+        <input type="hidden" name="acao" value="tramitar">
+        <h3>Registrar Tramitação</h3>
+
+        {% if tramitacao_form.non_field_errors %}
+          <div class="alert alert-error">{{ tramitacao_form.non_field_errors }}</div>
+        {% endif %}
+
+        {% for field in tramitacao_form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}{{ field.errors }}{% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn">Atualizar Status</button>
+      </form>
+    {% else %}
+      <p>Processo finalizado ({{ solicitacao.get_status_display }}). Não há novas transições disponíveis.</p>
+    {% endif %}
+
+    {% if solicitacao.avaliacao %}
+      <div class="alert alert-success">
+        <strong>Avaliação registrada:</strong> Nota {{ solicitacao.avaliacao.nota }}/5
+        {% if solicitacao.avaliacao.comentario %}
+          <br>Comentário: {{ solicitacao.avaliacao.comentario }}
+        {% endif %}
+      </div>
+    {% elif pode_avaliar %}
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="acao" value="avaliar">
+        <h3>Avaliar Atendimento (RF04)</h3>
+
+        {% if avaliacao_form.non_field_errors %}
+          <div class="alert alert-error">{{ avaliacao_form.non_field_errors }}</div>
+        {% endif %}
+
+        {% for field in avaliacao_form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}{{ field.errors }}{% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-secondary">Enviar Avaliação</button>
+      </form>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

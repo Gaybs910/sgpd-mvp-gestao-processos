@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SGPD — Sistema de Gestão de Processos Digitais{% endblock %}</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --text: #1b2430;
+      --muted: #4b5563;
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --border: #d1d5db;
+      --success-bg: #ecfdf5;
+      --success-text: #065f46;
+      --error-bg: #fef2f2;
+      --error-text: #991b1b;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 0.75rem 1rem;
+      z-index: 100;
+    }
+    .skip-link:focus {
+      left: 1rem;
+      top: 1rem;
+    }
+
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid #f59e0b;
+      outline-offset: 2px;
+    }
+
+    header {
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 1rem 1.5rem;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: #e2e8f0;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+    }
+
+    nav a:hover, nav a[aria-current="page"] {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .metric-label {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .metric-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #9ca3af;
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.65rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #334155;
+    }
+    .btn-secondary:hover { background: #1e293b; }
+
+    .alert {
+      padding: 0.9rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+    }
+    .alert-success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border-color: #a7f3d0;
+    }
+    .alert-error, .errorlist {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border-color: #fecaca;
+    }
+    .errorlist {
+      list-style: none;
+      padding: 0.5rem 0.75rem;
+      margin: 0.35rem 0 0;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 1rem 1.25rem;
+      color: var(--muted);
+      font-size: 0.875rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <header>
+    <div class="header-inner">
+      <a class="brand" href="{% url 'processos:inicio' %}">SGPD — Gestão de Processos Digitais</a>
+      <nav aria-label="Navegação principal">
+        <ul>
+          <li>
+            <a href="{% url 'processos:inicio' %}" {% if request.resolver_match.url_name == 'inicio' %}aria-current="page"{% endif %}>
+              Início / Nova Solicitação
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'processos:painel' %}" {% if request.resolver_match.url_name == 'painel' %}aria-current="page"{% endif %}>
+              Painel de Processos
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo-principal">
+    {% if messages %}
+      <div aria-live="polite">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'success' }}" role="status">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    SGPD MVP — Sistema de Gestão de Processos Digitais. Desenvolvido com foco em rastreabilidade, segurança e acessibilidade.
+  </footer>
+</body>
+</html>

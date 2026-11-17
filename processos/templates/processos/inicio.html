@@ -1,0 +1,55 @@
+{% extends "processos/base.html" %}
+
+{% block title %}Início — SGPD{% endblock %}
+
+{% block content %}
+<h1>Central de Processos Digitais</h1>
+<p>Abra uma nova solicitação ou consulte o andamento de um protocolo existente.</p>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="titulo-nova-solicitacao">
+    <h2 id="titulo-nova-solicitacao">Nova Solicitação (RF01)</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="acao" value="criar_solicitacao">
+
+      {% if solicitacao_form.non_field_errors %}
+        <div class="alert alert-error">{{ solicitacao_form.non_field_errors }}</div>
+      {% endif %}
+
+      {% for field in solicitacao_form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            {{ field.errors }}
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn">Registrar Solicitação</button>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="titulo-consulta-protocolo">
+    <h2 id="titulo-consulta-protocolo">Consultar Protocolo (RF02)</h2>
+    <p>Informe o número do protocolo para visualizar o status atual e o histórico de tramitação.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="acao" value="consultar_protocolo">
+
+      {% for field in consulta_form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            {{ field.errors }}
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-secondary">Consultar Protocolo</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
